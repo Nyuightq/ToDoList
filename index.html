@@ -112,8 +112,6 @@
         
     </div>
 
-    <div title="Test">TREEEEEE</div>
-    
     <footer class="fixed-bottom bg-white d-flex flex-wrap justify-content-between align-items-center py-0 py-md-2 border-top border-4 rounded-top-5">
         <div class="bg-dark shadow col-8 col-md-4 p-3 mx-4 border-bottom border-start border-primary border-5 
                     align-items-center justify-content-between d-flex rounded-4" style="max-width: 300px;">
@@ -182,7 +180,7 @@
                         ${inputValue}
                         </span>
                     <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Delete task"
-                    onclick="this.parentElement.parentElement.remove();">
+                    onclick="deleteTask(this)">
                         <i class="fa-solid fa-circle-xmark"></i>
                     </button>
                     </div>
@@ -215,6 +213,7 @@
     }
 
     function deleteTask(e) {
+        deleteTooltip();
         e.parentElement.parentElement.remove();
         initTooltip();
     }
@@ -223,13 +222,20 @@
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             const isInit = tooltipTriggerEl.hasAttribute('data-tooltip-initialized');
-
             if(!isInit){
                 new bootstrap.Tooltip(tooltipTriggerEl);
                 tooltipTriggerEl.setAttribute('data-tooltip-initialized', 'true');
             }
-            
         })
+    }
+
+    function deleteTooltip(){
+        const elements = document.getElementsByClassName('tooltip');
+        const elementArray = Array.from(elements);
+        
+        elementArray.forEach(element => {
+            element.remove();
+        });
     }
 
 </script>
