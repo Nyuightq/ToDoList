@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <title>To-Do List Manager</title>
+
+    <style>
+        h1::after{
+            content: "";
+            display: block;
+            width: 65%;
+            height: 3px;
+            background: #149ddd;
+            left: 50%;
+            transform: translate(0, 4px);
+            justify-content: center;
+        }
+        .dot{
+            display: inline-block; 
+            height:15px; 
+            width:15px; 
+            margin-left: 10px;
+            border-radius: 50%
+        }
+    </style>
+</head>
+<body class="bg-dark" style="min-height: 100vh">
+    <div class="card m-auto m-md-2 m-lg-5">
+        <!-- To-do List header -->
+        <header>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="rounded-circle bg-primary p-2 fa-solid fa-list-check text-white d-flex justify-content-center align-items-center" style="width: 30px; height: 30px;"></i>
+                    <h1 class="mx-2 fs-4 text-dark">To-do list</h1>
+                </div>
+                <div class="d-flex">
+                    <span class="dot" style="background-color: var(--bs-red);"></span>
+                    <span class="dot" style="background-color: var(--bs-yellow);"></span>
+                    <span class="dot" style="background-color: var(--bs-blue);"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="p-0 pb-3 p-lg-4">
+            <div class="row m-auto justify-content-around">
+
+                <!-- Pending list -->
+                <div class="todo-list col-6 col-md-4 m-0 p-0 p-lg-4">
+                    <div class="border">
+                        <div class="card-header">
+                            <span class="fw-normal fs-6 badge bg-primary-subtle text-primary-emphasis rounded-pill">
+                                <span class="px-1">
+                                    Pending list
+                                </span>
+                            </span>
+                        </div>
+                        <div class="card-body" id="pendingList">
+                            <!-- Create new task button-->
+                            <div class="border border-dark-subtle p-2 rounded-3 mb-3 text-body-tertiary" style="border: dashed var(--bs-gray-500) 1px !important;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <input id="newTaskName" type="text" class="form-control" placeholder="Create new task" aria-label="Input group example" aria-describedby="basic-addon1">
+                                    <button type="button" id="btn-create" class="btn btn-light text-success p-1 d-flex rounded-circle" 
+                                    data-bs-placement="top" data-bs-toggle="tooltip" data-bs-title="Create task"
+                                    onclick="newTask();">
+                                        <i class="fa-solid fa-circle-plus"></i>
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                            <!-- Sample task -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working list -->
+                <div class="todo-list col-6 col-md-4 m-0 p-0 p-lg-4">
+                    <div class="border">
+                        <div class="card-header">
+                            <span class="fw-normal fs-6 badge bg-warning-subtle text-warning-emphasis rounded-pill">
+                                <span class="px-1">
+                                    Working
+                                </span>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Done list -->
+                <div class="todo-list col-12 col-md-4 m-0 p-0 p-lg-4 mt-5 mt-md-0">
+                    <div class="border">
+                        <div class="card-header">
+                            <span class="fw-normal fs-6 badge bg-success-subtle text-success-emphasis rounded-pill">
+                                <span class="px-1">
+                                    Done
+                                </span>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <div title="Test">TREEEEEE</div>
+    
+    <footer class="fixed-bottom bg-white d-flex flex-wrap justify-content-between align-items-center py-0 py-md-2 border-top border-4 rounded-top-5">
+        <div class="bg-dark shadow col-8 col-md-4 p-3 mx-4 border-bottom border-start border-primary border-5 
+                    align-items-center justify-content-between d-flex rounded-4" style="max-width: 300px;">
+            <img src="src/resources/avatar.png" class="border border-2 rounded-2" height="48" width="48">
+            <span class="text-light px-2 text-truncate">
+                Powered by Nyuightq
+            </span>
+            <button type="button" class="btn btn-outline-light p-2 d-flex" data-bs-target="#profileDocument" data-bs-toggle="modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
+                    <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/>
+                </svg>
+            </button>
+        </div>
+
+        <ul class="nav d-flex mx-4 pe-3
+                    border-bottom border-start border-primary border-5 bg-dark shadow rounded-4 py-2">
+            <li class="ms-3"><a class="text-light icon-link-hover" style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+            </a></li>
+        </ul>
+    </footer>
+
+
+    <!-- Pop up profile document tab -->
+    <div class="modal fade" id="profileDocument" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">About project</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Inspiration : Notion.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- 
+    To do list function 
+    ###################
+-->
+<script>
+    
+    var todos = [];
+
+    var input = document.getElementById("newTaskName");
+    input.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("btn-create").click();
+    }
+    });
+    function newTask(){
+        var inputValue = document.getElementById("newTaskName").value;
+        if (inputValue) {
+            var taskCode = document.createElement("div");
+            taskCode.innerHTML = `
+                <div class="task border border-dark-subtle p-2 rounded-3 mb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="pe-2 text-truncate" 
+                        data-bs-placement="top" data-bs-toggle="tooltip" data-bs-title="${inputValue}">
+                        ${inputValue}
+                        </span>
+                    <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Delete task"
+                    onclick="this.parentElement.parentElement.remove();">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                    </div>
+                    <hr class="my-1">
+                    <div class="d-flex justify-content-end flex-wrap">
+                        <div class="badge text-bg-primary py-0 mx-1">
+                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
+                                <span class="align-items-center center p-2 px-1">
+                                    0s
+                                </span>
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div class="badge text-bg-warning py-0 mx-1">
+                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
+                                <span class="align-items-center center p-2 px-1">
+                                    5m
+                                </span>
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        var taskContainer = document.getElementById("pendingList");
+        taskContainer.appendChild(taskCode);
+        document.getElementById("newTaskName").value = "";
+        initTooltip();
+        }
+    }
+
+    function deleteTask(e) {
+        e.parentElement.parentElement.remove();
+        initTooltip();
+    }
+
+    function initTooltip(){
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            const isInit = tooltipTriggerEl.hasAttribute('data-tooltip-initialized');
+
+            if(!isInit){
+                new bootstrap.Tooltip(tooltipTriggerEl);
+                tooltipTriggerEl.setAttribute('data-tooltip-initialized', 'true');
+            }
+            
+        })
+    }
+
+</script>
+
+
+<!-- Installation bootstrap function -->
+<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            const isInit = tooltipTriggerEl.hasAttribute('data-tooltip-initialized');
+
+            if(!isInit){
+                new bootstrap.Tooltip(tooltipTriggerEl);
+                tooltipTriggerEl.setAttribute('data-tooltip-initialized', 'true');
+            }
+            
+        })
+</script>
+</html>
