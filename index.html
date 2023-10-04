@@ -4,31 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="src/main.css">
+    <link rel="stylesheet" href="src/_index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
     <title>To-Do List Manager</title>
-
-    <style>
-        h1::after{
-            content: "";
-            display: block;
-            width: 65%;
-            height: 3px;
-            background: #149ddd;
-            left: 50%;
-            transform: translate(0, 4px);
-            justify-content: center;
-        }
-        .dot{
-            display: inline-block; 
-            height:15px; 
-            width:15px; 
-            margin-left: 10px;
-            border-radius: 50%
-        }
-    </style>
 </head>
-<body class="bg-dark" style="min-height: 100vh">
+<body class="bg-dark">
     <div class="card m-auto m-md-2 m-lg-5">
         <!-- To-do List header -->
         <header>
@@ -58,10 +38,11 @@
                                     Pending list
                                 </span>
                             </span>
+                            
                         </div>
-                        <div class="card-body" id="pendingList">
+                        <div class="card-header">
                             <!-- Create new task button-->
-                            <div class="border border-dark-subtle p-2 rounded-3 mb-3 text-body-tertiary" style="border: dashed var(--bs-gray-500) 1px !important;">
+                            <div class="border border-dark-subtle p-2 rounded-3 text-body-tertiary" style="border: dashed var(--bs-gray-500) 1px !important;">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <input id="newTaskName" type="text" class="form-control" placeholder="Create new task" aria-label="Input group example" aria-describedby="basic-addon1">
                                     <button type="button" id="btn-create" class="btn btn-light text-success p-1 d-flex rounded-circle" 
@@ -72,7 +53,9 @@
                                     
                                 </div>
                             </div>
-                            <!-- Sample task -->
+                        </div>
+                        <div class="card-body task-list" id="pendingList">
+                            <div style="height: 1px;"></div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +70,8 @@
                                 </span>
                             </span>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body task-list" id="workingList" style="min-height: 104px;">
+                            <div style="height: 1px;"></div>
                         </div>
                     </div>
                 </div>
@@ -102,7 +86,8 @@
                                 </span>
                             </span>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body task-list" id="doneList" style="min-height: 104px;">
+                            <div style="height:1px"></div>
                         </div>
                     </div>
                 </div>
@@ -112,7 +97,8 @@
         
     </div>
 
-    <footer class="fixed-bottom bg-white d-flex flex-wrap justify-content-between align-items-center py-0 py-md-2 border-top border-4 rounded-top-5">
+    <div style="padding-bottom: 120px;"></div>
+    <footer class="mt-5 py-4 bg-white d-flex flex-wrap justify-content-between align-items-center border-top border-4">
         <div class="bg-dark shadow col-8 col-md-4 p-3 mx-4 border-bottom border-start border-primary border-5 
                     align-items-center justify-content-between d-flex rounded-4" style="max-width: 300px;">
             <img src="src/resources/avatar.png" class="border border-2 rounded-2" height="48" width="48">
@@ -153,106 +139,7 @@
     </div>
 </body>
 
-<!-- 
-    To do list function 
-    ###################
--->
-<script>
-    
-    var todos = [];
 
-    var input = document.getElementById("newTaskName");
-    input.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        document.getElementById("btn-create").click();
-    }
-    });
-    function newTask(){
-        var inputValue = document.getElementById("newTaskName").value;
-        if (inputValue) {
-            var taskCode = document.createElement("div");
-            taskCode.innerHTML = `
-                <div class="task border border-dark-subtle p-2 rounded-3 mb-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="pe-2 text-truncate" 
-                        data-bs-placement="top" data-bs-toggle="tooltip" data-bs-title="${inputValue}">
-                        ${inputValue}
-                        </span>
-                    <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Delete task"
-                    onclick="deleteTask(this)">
-                        <i class="fa-solid fa-circle-xmark"></i>
-                    </button>
-                    </div>
-                    <hr class="my-1">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        <div class="badge text-bg-primary py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
-                                <span class="align-items-center center p-2 px-1">
-                                    0s
-                                </span>
-                                <i class="fa-solid fa-hourglass-half"></i>
-                            </div>
-                        </div>
-                        <div class="badge text-bg-warning py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
-                                <span class="align-items-center center p-2 px-1">
-                                    5m
-                                </span>
-                                <i class="fa-solid fa-stopwatch"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        var taskContainer = document.getElementById("pendingList");
-        taskContainer.appendChild(taskCode);
-        document.getElementById("newTaskName").value = "";
-        initTooltip();
-        }
-    }
-
-    function deleteTask(e) {
-        deleteTooltip();
-        e.parentElement.parentElement.remove();
-        initTooltip();
-    }
-
-    function initTooltip(){
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            const isInit = tooltipTriggerEl.hasAttribute('data-tooltip-initialized');
-            if(!isInit){
-                new bootstrap.Tooltip(tooltipTriggerEl);
-                tooltipTriggerEl.setAttribute('data-tooltip-initialized', 'true');
-            }
-        })
-    }
-
-    function deleteTooltip(){
-        const elements = document.getElementsByClassName('tooltip');
-        const elementArray = Array.from(elements);
-        
-        elementArray.forEach(element => {
-            element.remove();
-        });
-    }
-
-</script>
-
-
-<!-- Installation bootstrap function -->
+<script src="src/js/task.js"></script>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-<script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            const isInit = tooltipTriggerEl.hasAttribute('data-tooltip-initialized');
-
-            if(!isInit){
-                new bootstrap.Tooltip(tooltipTriggerEl);
-                tooltipTriggerEl.setAttribute('data-tooltip-initialized', 'true');
-            }
-            
-        })
-</script>
 </html>
