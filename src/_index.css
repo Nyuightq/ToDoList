@@ -46,3 +46,8 @@ h1::after{
     opacity: 50%;
     border: 1px dashed #ccc !important;
 }
+
+.task{
+    transition: 0.2s;
+    cursor: move;
+}
