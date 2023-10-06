@@ -97,17 +97,16 @@ function deleteTooltip(){
 
     function newTask(){
         const inputValue = document.getElementById("newTaskName").value;
-        const task = {
-            id: Date.now(),
-            content: inputValue,
-            status: "pendingList",
-            estTime: 0,
-            processedTime: 0
-        };
-        todos.push(task);
-        localStorage.setItem("TaskList", JSON.stringify(todos));
-        
         if (inputValue) {
+            const task = {
+                id: Date.now(),
+                content: inputValue,
+                status: "pendingList",
+                estTime: 0,
+                processedTime: 0
+            };
+            todos.push(task);
+            localStorage.setItem("TaskList", JSON.stringify(todos));
             const script = `
                 <div draggable="true" class="task border border-dark-subtle p-2 rounded-3 mb-3" id="${Date.now()}">
                     <div class="d-flex align-items-center justify-content-between">
