@@ -25,6 +25,9 @@
             90% { transform: translate(1px, 2px) rotate(3deg); }
             100% { transform: translate(1px, -2px) rotate(-3deg);}
         }
+        input{
+            width: fit-content;
+        }
 
         h1::after{
             content: "";
@@ -43,6 +46,18 @@
             color: var(--bs-warning);
             animation: shake 1s infinite;
         }
+        .editable{
+            transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+            border-radius: 3px;
+            border: rgba(0,0,0,0) dashed 1px;
+            padding: 0px 2px;
+        }
+        .editable[contenteditable|="true"]{
+            color: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0, 0.3);
+            border: rgba(126, 115, 14, 0.6) dashed 1px;
+            cursor: text;
+        }
 
         .moving{
             opacity: 50%;
@@ -50,7 +65,7 @@
         }
         .task{
             transition: 0.2s;
-            cursor: move;
+            cursor: grab;
         }
     </style>
 </head>
@@ -100,7 +115,7 @@
                             <div class="border border-dark-subtle p-2 rounded-3 text-body-tertiary" style="border: dashed var(--bs-gray-500) 1px !important;">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <input id="newTaskName" type="text" class="form-control" placeholder="Create new task" aria-label="Input group example" aria-describedby="basic-addon1">
-                                    <button type="button" id="btn-create" class="btn btn-light text-success p-1 d-flex rounded-circle" 
+                                    <button type="button" id="btn-create" class="ms-1 btn btn-light text-success p-1 d-flex rounded-circle" 
                                     data-bs-placement="top" data-bs-toggle="tooltip" data-bs-title="Create task"
                                     onclick="newTask();">
                                         <i class="fa-solid fa-circle-plus"></i>
@@ -162,7 +177,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Inspiration : Notion.
+                    <h2 class="text-primary-emphasis">To do list</h2>
+                    <p class="badge bg-warning">Javascript</p>
+                    <p class="badge bg-info">CSS</p>
+                    <p class="badge bg-primary">Bootstrap</p>
+                    <p>A small project focus on <font class="text-bold text-warning">user experience design</font>.
+                        <br> Combination of to-do list and countdown timer system.</p>
+                    <h4 class="text-secondary-emphasis">Functionality</h4>
+                    <ul>
+                        <li>Edit task</li>
+                        <li>Delete task</li>
+                        <li>Drag and drop</li>
+                        <li>Countdown system</li>
+                        <li>Numeric input validation</li>
+                        <li>Local storage</li>
+                    </ul>
+
+                    <p>
+                        Inspiration: Notion <br>
+                    </p>
                 </div>
             </div>
         </div>

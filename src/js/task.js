@@ -21,7 +21,83 @@ function deleteTooltip(){
     });
 }
 
+function prepareTaskDOM(id, content, processedTime, estTime, status){
+    const script = `
+            <div draggable="true" class="task border border-dark-subtle p-2 rounded-3 mb-3" id="${id}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="editable text-break flex-grow-1" style="user-select: none;" disable="true" id="content">
+                        ${content}
+                    </span>
+                    <div class="d-flex justify-content-end ms-1">
+                        <button type="button" class="btn-edit btn btn-light p-1 d-flex rounded-circle" 
+                                data-bs-toggle="tooltip" data-bs-title="Edit task"
+                                onclick="editTask(this)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" 
+                                data-bs-toggle="tooltip" data-bs-title="Delete task"
+                                onclick="deleteTask(this)">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <hr class="my-1">
+                <div class="d-flex justify-content-end flex-wrap">
+                    <div class="badge text-bg-primary py-0 mx-1">
+                        <div class="d-flex align-items-center justify-content-center text-end py-1" 
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
+                            <span class="d-flex center px-1 py-1" value=${processedTime} id="processedTime">
+                                <span id="timeNone">-</span>
+                                <div class="numeric d-none me-1" id="hr">
+                                    <span class="editable">${Math.floor(processedTime / (60*60))}</span> <span>h</span>
+                                </div>
+                                <div class="numeric d-none me-1" id="min">
+                                    <span class="editable">${processedTime % (60*60)}</span> <span>min</span>
+                                </div>
+                                <div class="numeric d-none" id="sec">
+                                    <span class="editable">${processedTime % (60)}</span> <span>sec</span>
+                                </div>
+                            </span>
+                            <i class="fa-solid fa-hourglass-half ms-1 py-1"></i>
+                        </div>
+                    </div>
+                    <div class="badge text-bg-warning py-0 mx-1">
+                        <div class="d-flex align-items-center justify-content-center text-end py-1" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
+                            <span class="d-flex align-items-center center p-2 px-1 py-1" value=${estTime} id="estTime">
+                                <span id="timeNone">-</span>
+                                <div class="numeric d-none me-1" id="hr">
+                                    <span class="editable">${Math.floor(processedTime / (60*60))}</span> <span>h</span>
+                                </div>
+                                <div class="numeric d-none me-1" id="min">
+                                    <span class="editable">${processedTime % (60*60)}</span> <span>min</span>
+                                </div>
+                                <div class="numeric d-none" id="sec">
+                                    <span class="editable">${processedTime % (60)}</span> <span>sec</span>
+                                </div>
+                            </span>
+                            <i class="fa-solid fa-stopwatch ms-1 py-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(script, 'text/html');
+    let taskCode = doc.body.firstChild;
+        
 
+    let taskContainer;
+    switch(status){
+        case "workingList": taskContainer = document.getElementById("workingList");
+                        break;
+        case "doneList":    taskContainer = document.getElementById("doneList");
+                        break;
+        default:        taskContainer = document.getElementById("pendingList");
+    }
+    taskContainer.appendChild(taskCode);
+    initTooltip();
+    initNumericInput();
+}
 
 // Task functions
     if(localStorage.getItem("TaskList") === null){
@@ -30,62 +106,12 @@ function deleteTooltip(){
     else{
         var todos = JSON.parse(localStorage.getItem("TaskList"));
         console.log(todos);
-
         // Initialize local storage data.
         todos.forEach(function (task){
-            const script = `
-                <div draggable="true" class="task border border-dark-subtle p-2 rounded-3 mb-3" id="${task.id}">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="editable pe-2 text-break" style="user-select: none;">
-                        ${task.content}
-                        </span>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn-edit btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Edit task"
-                                onclick="editTask(this)">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
-                        <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Delete task"
-                        onclick="deleteTask(this)">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                        </button>
-                    </div>
-                    </div>
-                    <hr class="my-1">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        <div class="badge text-bg-primary py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
-                                <span class="editable align-items-center center p-2 px-1" value=${task.processedTime}>
-                                    -
-                                </span>
-                                <i class="fa-solid fa-hourglass-half"></i>
-                            </div>
-                        </div>
-                        <div class="badge text-bg-warning py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
-                                <span class="editable align-items-center center p-2 px-1" value=${task.estTime}>
-                                    -
-                                </span>
-                                <i class="fa-solid fa-stopwatch"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(script, 'text/html');
-            let taskCode = doc.body.firstChild;
-
-            let taskContainer;
-            switch(task.status){
-                case "workingList": taskContainer = document.getElementById("workingList");
-                                break;
-                case "doneList":    taskContainer = document.getElementById("doneList");
-                                break;
-                default:        taskContainer = document.getElementById("pendingList");
-            }
-            taskContainer.appendChild(taskCode);
+            prepareTaskDOM(task.id, task.content, task.processedTime, task.estTime, task.status);
         });
     }
+
     const input = document.getElementById("newTaskName");
     input.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
@@ -93,7 +119,6 @@ function deleteTooltip(){
         document.getElementById("btn-create").click();
     }});
     
-
 
     function newTask(){
         const inputValue = document.getElementById("newTaskName").value;
@@ -107,52 +132,10 @@ function deleteTooltip(){
             };
             todos.push(task);
             localStorage.setItem("TaskList", JSON.stringify(todos));
-            const script = `
-                <div draggable="true" class="task border border-dark-subtle p-2 rounded-3 mb-3" id="${Date.now()}">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="editable pe-2 text-break" style="user-select: none;">
-                        ${inputValue}
-                        </span>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn-edit btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Edit task"
-                                onclick="editTask(this)">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
-                        <button type="button" class="btn-delete btn btn-light p-1 d-flex rounded-circle" data-bs-toggle="tooltip" data-bs-title="Delete task"
-                        onclick="deleteTask(this)">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                        </button>
-                    </div>
-                    </div>
-                    <hr class="my-1">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        <div class="badge text-bg-primary py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
-                                <span class="editable align-items-center center p-2 px-1" value=0>
-                                    -
-                                </span>
-                                <i class="fa-solid fa-hourglass-half"></i>
-                            </div>
-                        </div>
-                        <div class="badge text-bg-warning py-0 mx-1">
-                            <div class="d-flex align-items-center justify-content-end text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
-                                <span class="editable align-items-center center p-2 px-1" value=0>
-                                    -
-                                </span>
-                                <i class="fa-solid fa-stopwatch"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(script, 'text/html');
-            let taskCode = doc.body.firstChild;
-
-            const taskContainer = document.getElementById("pendingList");
-            taskContainer.appendChild(taskCode);
+            prepareTaskDOM(task.id, task.content, task.processedTime, task.estTime, task.status);
             document.getElementById("newTaskName").value = "";
             initTooltip();
+            initNumericInput();
         }
     }
 
@@ -181,6 +164,7 @@ function deleteTooltip(){
                     element.blur();
                     }
                 });
+                displayNumericInput(task);
             });
             editButton.classList.add("editingBtn");
         } else {
@@ -189,27 +173,83 @@ function deleteTooltip(){
                 element.classList.remove("editing");
             });
             editButton.classList.remove("editingBtn");
+            updateTaskInfo(task);
+            hideNumericInput(task);
         }
     }
 
-    // function updateTaskInfo(task){
-    //     todos = todos.map(function(todo){
-    //         console.log("pass");
-    //         if(todo.id == task.id){
-    //             if(todo.content != task.content)
-    //                 todo.content = task.content;
+    function displayNumericInput(task){
+        const target = task.querySelectorAll(".numeric");
+        const targetText = task.querySelectorAll("#timeNone");
+
+        targetText.forEach(function (element){
+            element.classList.add("d-none");
+        });
+        
+        target.forEach(function (element) {
+            element.classList.remove("d-none");
+            element.classList.add("numericDisplay");
+        });
+    }
+
+    function hideNumericInput(task){
+        const target = task.querySelectorAll(".numericDisplay");
+        const targetText = task.querySelectorAll("#timeNone");
+
+        let num = 0;
+        target.forEach(function (element) {
+            if(parseInt(element.textContent) > 0){
+                num++;
+            }
+        });
+
+        if(num==0){
+            targetText.forEach(function (element){
+                element.classList.remove("d-none");
+            });
+            
+            target.forEach(function(element){
+                element.classList.remove("numericDisplay");
+                element.classList.add("d-none");
+            });
+        }
+    }
+
+    function initNumericInput(){
+        const target = document.querySelectorAll(".numeric");
+        target.forEach(function(element){
+            element.addEventListener("keypress", function(e) {
+                if (isNaN(String.fromCharCode(e.which))) e.preventDefault();
+            });
+            element.addEventListener("blur", function(e){
+                element.textContent = parseInt(element.textContent);
+            })
+        })
+    }
+
+    function updateTaskInfo(task){
+        const content = task.querySelector("#content").textContent;
+        const proTime = parseInt(task.querySelector("#processedTime").textContent);
+        const estTime = parseInt(task.querySelector("#estTime").textContent);
+        console.log(proTime, estTime);
+
+        todos = todos.map(function(todo){
+            if(todo.id == task.id){
+                if(todo.content != content)
+                    todo.content = content;
                 
-    //             if(todo.estTime != task.estTime)
-    //                 todo.estTime = task.estTime;
+                if(todo.estTime != estTime)
+                    todo.estTime = estTime;
 
-    //             if(todo.processedTime != task.processedTime)
-    //                 todo.processedTime = task.processedTime;
+                if(todo.processedTime != proTime)
+                    todo.processedTime = proTime;
 
-    //             return todo;
-    //         }
-    //         return todo;
-    //     });
-    // }
+                return todo;
+            }
+            return todo;
+        });
+        localStorage.setItem("TaskList", JSON.stringify(todos)); 
+    }
 
     function updateTaskStatus(task){
         todos = todos.map(function(todo){
