@@ -11,11 +11,9 @@ function initTooltip(){
         }
     })
 }
-
 function deleteTooltip(){
     const elements = document.getElementsByClassName('tooltip');
     const elementArray = Array.from(elements);
-    
     elementArray.forEach(element => {
         element.remove();
     });
@@ -46,33 +44,34 @@ function prepareTaskDOM(id, content, processedTime, estTime, status){
                     <div class="badge text-bg-primary py-0 mx-1">
                         <div class="d-flex align-items-center justify-content-center text-end py-1" 
                                 data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Progressed time">
-                            <span class="d-flex center px-1 py-1" value=${processedTime} id="processedTime">
+                            <span class="d-flex center px-1 py-1" value="${processedTime}" id="processedTime">
                                 <span id="timeNone">-</span>
                                 <div class="numeric d-none me-1" id="hr">
-                                    <span class="editable">${Math.floor(processedTime / (60*60))}</span> <span>h</span>
+                                    <span class="numInput editable">${Math.floor(processedTime / (60*60))}</span> <span>h</span>
                                 </div>
                                 <div class="numeric d-none me-1" id="min">
-                                    <span class="editable">${processedTime % (60*60)}</span> <span>min</span>
+                                    <span class="numInput editable">${Math.floor(processedTime / 60) % 60}</span> <span>min</span>
                                 </div>
                                 <div class="numeric d-none" id="sec">
-                                    <span class="editable">${processedTime % (60)}</span> <span>sec</span>
+                                    <span class="numInput editable">${processedTime % (60)}</span> <span>sec</span>
                                 </div>
                             </span>
                             <i class="fa-solid fa-hourglass-half ms-1 py-1"></i>
                         </div>
                     </div>
                     <div class="badge text-bg-warning py-0 mx-1">
-                        <div class="d-flex align-items-center justify-content-center text-end py-1" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Estimate time">
-                            <span class="d-flex align-items-center center p-2 px-1 py-1" value=${estTime} id="estTime">
+                        <div class="d-flex align-items-center justify-content-center text-end py-1" data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom" data-bs-title="Estimate time">
+                            <span class="d-flex align-items-center center p-2 px-1 py-1" value="${estTime}" id="estTime">
                                 <span id="timeNone">-</span>
                                 <div class="numeric d-none me-1" id="hr">
-                                    <span class="editable">${Math.floor(processedTime / (60*60))}</span> <span>h</span>
+                                    <span class="numInput editable">${Math.floor(estTime / (60*60))}</span> <span>h</span>
                                 </div>
                                 <div class="numeric d-none me-1" id="min">
-                                    <span class="editable">${processedTime % (60*60)}</span> <span>min</span>
+                                    <span class="numInput editable">${Math.floor(estTime / 60) % 60}</span> <span>min</span>
                                 </div>
                                 <div class="numeric d-none" id="sec">
-                                    <span class="editable">${processedTime % (60)}</span> <span>sec</span>
+                                    <span class="numInput editable">${estTime % (60)}</span> <span>sec</span>
                                 </div>
                             </span>
                             <i class="fa-solid fa-stopwatch ms-1 py-1"></i>
@@ -104,11 +103,18 @@ function prepareTaskDOM(id, content, processedTime, estTime, status){
         var todos = [];
     }
     else{
+        let num=0;
         var todos = JSON.parse(localStorage.getItem("TaskList"));
-        console.log(todos);
         // Initialize local storage data.
-        todos.forEach(function (task){
+        todos.forEach(function (task) {
             prepareTaskDOM(task.id, task.content, task.processedTime, task.estTime, task.status);
+            num++;
+
+            const target = document.getElementById(task.id);
+            displayNumericInput(target);
+            convertNumericInput(target);
+            showTimeDiv(target.querySelector("#processedTime"));
+            showTimeDiv(target.querySelector("#estTime"));
         });
     }
 
@@ -167,15 +173,21 @@ function prepareTaskDOM(id, content, processedTime, estTime, status){
                 displayNumericInput(task);
             });
             editButton.classList.add("editingBtn");
-        } else {
-            editableElements.forEach(function (element) {
-                element.contentEditable = false;
-                element.classList.remove("editing");
-            });
-            editButton.classList.remove("editingBtn");
-            updateTaskInfo(task);
-            hideNumericInput(task);
+            return;
         }
+        
+        editableElements.forEach(function (element) {
+            element.contentEditable = false;
+            element.classList.remove("editing");
+        });
+        editButton.classList.remove("editingBtn");
+        convertNumericInput(task.querySelector("#processedTime"));
+        convertNumericInput(task.querySelector("#estTime"));
+
+        showTimeDiv(task.querySelector("#processedTime"));
+        showTimeDiv(task.querySelector("#estTime"));
+
+        updateTaskInfo(task);
     }
 
     function displayNumericInput(task){
@@ -192,46 +204,71 @@ function prepareTaskDOM(id, content, processedTime, estTime, status){
         });
     }
 
-    function hideNumericInput(task){
-        const target = task.querySelectorAll(".numericDisplay");
-        const targetText = task.querySelectorAll("#timeNone");
+    function showTimeDiv(timeDiv){
+        const hrElement = timeDiv.querySelector("#hr");
+        const minElement = timeDiv.querySelector("#min");
+        const secElement = timeDiv.querySelector("#sec");
+        const targetNone = timeDiv.querySelector("#timeNone");
 
-        let num = 0;
-        target.forEach(function (element) {
-            if(parseInt(element.textContent) > 0){
-                num++;
-            }
-        });
-
-        if(num==0){
-            targetText.forEach(function (element){
-                element.classList.remove("d-none");
-            });
-            
-            target.forEach(function(element){
-                element.classList.remove("numericDisplay");
-                element.classList.add("d-none");
-            });
+        if(parseInt(hrElement.querySelector(".numInput").textContent) > 0){
+            hrElement.classList.remove("d-none");
+            minElement.classList.remove("d-none");
+            secElement.classList.remove("d-none");
+            targetNone.classList.add("d-none");
+            return;
+        }else if(parseInt(minElement.querySelector(".numInput").textContent) > 0){
+            hrElement.classList.add("d-none");
+            minElement.classList.remove("d-none");
+            secElement.classList.remove("d-none");
+            targetNone.classList.add("d-none");
+        }else if(parseInt(secElement.querySelector(".numInput").textContent) > 0){
+            hrElement.classList.add("d-none");
+            minElement.classList.add("d-none");
+            secElement.classList.remove("d-none");
+            targetNone.classList.add("d-none");
+        }
+        else{
+            hrElement.classList.add("d-none");
+            minElement.classList.add("d-none");
+            secElement.classList.add("d-none");
+            targetNone.classList.remove("d-none");
         }
     }
 
+    function convertNumericInput(timeDiv){
+        const hrElement = timeDiv.querySelector("#hr").querySelector(".numInput");
+        const minElement = timeDiv.querySelector("#min").querySelector(".numInput");
+        const secElement = timeDiv.querySelector("#sec").querySelector(".numInput");
+
+        const hr = parseInt(hrElement.textContent);
+        const min = parseInt(minElement.textContent);
+        const sec = parseInt(secElement.textContent);
+
+        hrElement.textContent = Math.max(Math.min(hr + Math.floor(min / 60) + Math.floor (sec/(60*60)), 24), 0);
+        minElement.textContent = Math.max((min % 60 + Math.floor(sec / 60)) % 60, 0);
+        secElement.textContent = Math.max(sec % 60, 0);
+
+        timeDiv.setAttribute("value", (parseInt(hrElement.textContent*(60*60)) + parseInt(minElement.textContent*60) + parseInt(secElement.textContent)));
+    }
+
     function initNumericInput(){
-        const target = document.querySelectorAll(".numeric");
+        const target = document.querySelectorAll(".numInput");
+
         target.forEach(function(element){
             element.addEventListener("keypress", function(e) {
                 if (isNaN(String.fromCharCode(e.which))) e.preventDefault();
             });
-            element.addEventListener("blur", function(e){
+            element.addEventListener("blur", function(){
                 element.textContent = parseInt(element.textContent);
-            })
+                if(isNaN(element.textContent)) element.textContent = "0";
+            });
         })
     }
 
     function updateTaskInfo(task){
         const content = task.querySelector("#content").textContent;
-        const proTime = parseInt(task.querySelector("#processedTime").textContent);
-        const estTime = parseInt(task.querySelector("#estTime").textContent);
-        console.log(proTime, estTime);
+        const proTime = parseInt(task.querySelector("#processedTime").getAttribute("value"));
+        const estTime = parseInt(task.querySelector("#estTime").getAttribute("value"));
 
         todos = todos.map(function(todo){
             if(todo.id == task.id){
@@ -260,54 +297,85 @@ function prepareTaskDOM(id, content, processedTime, estTime, status){
             }
             return todo;
         });
-        // Update localStorage
         localStorage.setItem("TaskList", JSON.stringify(todos)); 
     }
+
+    setInterval(function(){
+        const taskList = document.getElementById("workingList");
+        const tasks = taskList.querySelectorAll("#processedTime");
+        tasks.forEach(function (timer) {
+            const task = timer.parentElement.parentElement.parentElement.parentElement;
+            if(task.querySelector(".editing") !== null){
+                return;
+            }
+
+            let value = parseInt(timer.getAttribute("value")) + 1;
+            timer.setAttribute("value", value);
+
+            const hrElement = timer.querySelector("#hr").querySelector(".numInput");
+            const minElement = timer.querySelector("#min").querySelector(".numInput");
+            const secElement = timer.querySelector("#sec").querySelector(".numInput");
+
+            hrElement.textContent = Math.floor(value/(60*60));
+            minElement.textContent = Math.floor(value/60) % 60;
+            secElement.textContent = value % 60;
+            showTimeDiv(timer);
+
+            todos = todos.map(function(todo) {
+                if (todo.id == task.id) {
+                    todo.processedTime = value;
+                    return todo;
+                }
+                return todo;
+            });
+        });
+        localStorage.setItem("TaskList", JSON.stringify(todos));
+    }, 1000);
 
 
 //
 // Task drag and drop function, with instant arrangement.
 //
 
-    const lists = document.querySelectorAll('.task-list');
-    let sourceNode;
+const lists = document.querySelectorAll('.task-list');
+let sourceNode;
     
-    lists.forEach(function (list){
-        list.ondragstart = e => {
+lists.forEach(function (list){
+    list.ondragstart = e => {
             
-            if(!e.target.matches('.task'))
-                return
+        if(!e.target.matches('.task'))
+            return
 
-            sourceNode = e.target;
-            setTimeout(() => {
-                e.target.classList.add('moving');
-            }, 0);
-            e.dataTransfer.effectAllowed = 'move';
-        };
+        sourceNode = e.target;
+        setTimeout(() => {
+            e.target.classList.add('moving');
+        }, 0);
+        e.dataTransfer.effectAllowed = 'move';
+    };
 
-        list.ondragend = e => {
-            e.target.classList.remove('moving');
-            updateTaskStatus(e.target);
+    list.ondragend = e => {
+        e.target.classList.remove('moving');
+        updateTaskStatus(e.target);
+    }
+
+    list.ondragover = e => {
+        e.preventDefault();
+    }
+
+    list.ondragenter = e => {
+        e.preventDefault();
+        if (e.target === list || e.target === sourceNode) {
+            return;
         }
-
-        list.ondragover = e => {
-            e.preventDefault();
-        }
-
-        list.ondragenter = e => {
-            e.preventDefault();
-            if (e.target === list || e.target === sourceNode) {
-                return;
-            }
             
-            const children = Array.from(list.children);
-            const sourceIndex = children.indexOf(sourceNode);
-            const targetIndex = children.indexOf(e.target);
+        const children = Array.from(list.children);
+        const sourceIndex = children.indexOf(sourceNode);
+        const targetIndex = children.indexOf(e.target);
 
-            if (sourceIndex < targetIndex) {
-                list.insertBefore(sourceNode, e.target.nextElementSibling);
-            } else {
-                list.insertBefore(sourceNode, e.target);
-            }
-        };
-    });
+        if (sourceIndex < targetIndex) {
+            list.insertBefore(sourceNode, e.target.nextElementSibling);
+        } else {
+            list.insertBefore(sourceNode, e.target);
+        }
+    };
+});
