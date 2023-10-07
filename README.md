@@ -10,12 +10,12 @@ The combination of to-do-list and time counter system, enable user to track the 
 [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 
 ### Features
-- Responsive website design
 - Create / Edit / Delete task
 - Drag and drop task block
 - Working time recorder
 - Local storage
 
+**[WARNING] - Drag and drop feature is unsupported in Mobile Device.**
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
